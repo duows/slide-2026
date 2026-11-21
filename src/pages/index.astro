@@ -1,0 +1,34 @@
+---
+import '@fontsource/anton/latin-400.css';
+import '@fontsource/montserrat/latin-500.css';
+import '@fontsource/montserrat/latin-700.css';
+import '@fontsource/montserrat/latin-800.css';
+import '@fontsource/montserrat/latin-900.css';
+import '../styles/global.css';
+import Slide from '../components/Slide.astro';
+import { slides, owner } from '../data/slides';
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{owner} · Retrospectiva 2026</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23C9349B'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='white' font-family='Impact'%3E26%3C/text%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div id="viewport">
+      <main id="stage">
+        <div id="slides">
+          {slides.map((s, i) => <Slide slide={s} index={i + 1} />)}
+        </div>
+        <div class="intro-sweep" id="intro-sweep"></div>
+        <div class="intro-flash" id="intro-flash"></div>
+        <div class="intro-black" id="intro-black"></div>
+      </main>
+    </div>
+    <script>
+      import '../scripts/deck.ts';
+    </script>
+  </body>
+</html>

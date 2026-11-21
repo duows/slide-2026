@@ -1,0 +1,67 @@
+---
+import { Picture } from 'astro:assets';
+import { img } from '../lib/images';
+import Photo from './Photo.astro';
+import type { Meme } from '../data/slides';
+
+interface Props { meme: Meme }
+const { meme } = Astro.props;
+const polaroid = meme.style === 'polaroid';
+const extra = meme.extra;
+---
+{polaroid ? (
+  <div class:list={['meme', 'meme--polaroid', extra && `meme--duo`]}>
+    {extra && (
+      <div class:list={['meme-enter', 'extra', `extra--${extra.place}`, extra.portrait && 'extra--portrait']} data-a="meme2" data-entrance="drop" style={extra.at}>
+        <div class="float" data-float>
+          <figure class="polaroid polaroid--sm" style={`--tilt:${extra.tilt ?? 5}deg`}>
+            <div class="polaroid-photo">
+              <Photo name={extra.image} alt={extra.alt} widths={[480, 960]} sizes="480px" style={`object-position:${extra.focus ?? "50% 50%"}`} />
+            </div>
+            {extra.caption && <figcaption>{extra.caption}</figcaption>}
+          </figure>
+        </div>
+      </div>
+    )}
+    <div class:list={['meme-enter', meme.portrait && 'meme-enter--portrait']} data-a="meme" data-entrance={meme.entrance}>
+      <div class="float" data-float>
+        <figure class:list={['polaroid', meme.portrait && 'polaroid--portrait']} style={`--tilt:${meme.tilt ?? 3}deg`}>
+          <div class="polaroid-photo">
+            <Photo name={meme.image} alt={meme.alt} widths={[640, 1280]} sizes="640px" style={`object-position:${meme.focus ?? "50% 50%"}`} />
+          </div>
+          {meme.caption && <figcaption>{meme.caption}</figcaption>}
+        </figure>
+      </div>
+    </div>
+    {meme.sticker && <div class="sticker sticker--polaroid" data-a="sticker" style={meme.stickerAt}>{meme.sticker}</div>}
+    {meme.badge && (
+      <div class="badge" data-a="badge" style={meme.badge.at}>
+        <Picture src={img(meme.badge.image)} alt={meme.badge.alt} widths={[300, 600]} sizes="300px"
+          formats={['webp']} loading="eager" decoding="async" />
+      </div>
+    )}
+  </div>
+) : (
+  <div class:list={['meme', 'meme--cutout', extra && 'meme--with-corner']}>
+    <div class="meme-enter" data-a="meme" data-entrance={meme.entrance}>
+      <div class="cutout-bob" data-bob>
+        <Picture src={img(meme.image)} alt={meme.alt} widths={[800, 1400]} sizes="800px"
+          formats={['webp']} loading="eager" decoding="async" class="cutout" />
+      </div>
+      {meme.quote && <p class="meme-quote" data-a="quote">{meme.quote}</p>}
+    </div>
+    {extra && (
+      <div class:list={['meme-enter', 'extra', `extra--${extra.place}`, extra.portrait && 'extra--portrait']} data-a="meme2" data-entrance="drop" style={extra.at}>
+        <div class="float" data-float>
+          <figure class="polaroid polaroid--sm" style={`--tilt:${extra.tilt ?? -5}deg`}>
+            <div class="polaroid-photo">
+              <Photo name={extra.image} alt={extra.alt} widths={[480, 960]} sizes="480px" style={`object-position:${extra.focus ?? "50% 50%"}`} />
+            </div>
+            {extra.caption && <figcaption>{extra.caption}</figcaption>}
+          </figure>
+        </div>
+      </div>
+    )}
+    {meme.sticker && <div class="sticker sticker--cutout" data-a="sticker" style={meme.stickerAt}>{meme.sticker}</div>}
+  </div>
+)}

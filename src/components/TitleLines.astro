@@ -1,0 +1,10 @@
+---
+interface Props { text: string; class?: string; tag?: 'h1' | 'h2' }
+const { text, class: cls, tag: Tag = 'h2' } = Astro.props;
+const lines = text.split('\n');
+---
+<Tag class:list={['title', cls]} aria-label={lines.join(' ')}>
+  {lines.map((l) => (
+    <span class="mask" aria-hidden="true"><span class="line" data-a="line">{l}</span></span>
+  ))}
+</Tag>

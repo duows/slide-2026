@@ -1,0 +1,13 @@
+---
+interface Props { size?: number }
+const { size = 56 } = Astro.props;
+---
+<svg class="spinner" width={size} height={size} viewBox="0 0 50 50" aria-hidden="true">
+  <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="5" />
+  <circle cx="25" cy="25" r="20" fill="none" stroke="url(#spin-g)" stroke-width="5" stroke-linecap="round" stroke-dasharray="40 200" />
+  <defs>
+    <linearGradient id="spin-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB458" /><stop offset="1" stop-color="#C9349B" />
+    </linearGradient>
+  </defs>
+</svg>

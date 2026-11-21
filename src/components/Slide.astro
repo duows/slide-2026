@@ -1,0 +1,250 @@
+---
+import Bg from './Bg.astro';
+import Meme from './Meme.astro';
+import TitleLines from './TitleLines.astro';
+import Spinner from './Spinner.astro';
+import Logo from './Logo.astro';
+import Photo from './Photo.astro';
+import type { Slide } from '../data/slides';
+
+interface Props { slide: Slide; index: number }
+const { slide: s, index } = Astro.props;
+const memeDepth = 'meme' in s ? (s.meme.depth ?? 1.8) : 1.6;
+const fmtStat = (v: number) => `${v}%`;
+---
+<section class:list={['slide', `slide--${s.kind}`]} data-kind={s.kind} data-index={index} aria-roledescription="slide">
+  <!-- Camada 1: fundo -->
+  <div class="layer layer--bg" data-depth="0.15"><div class="px"><Bg bg={s.background} /></div></div>
+
+  <!-- Camada 2: texto -->
+  <div class="layer layer--text" data-depth="0.9">
+    <div class="px">
+      {s.kind === 'title' && (
+        <div class="title-hero">
+          <div class="hero-26" aria-hidden="true">
+            <span class="hero-26-blur" data-a="big-blur">{s.big}</span>
+            <span class="hero-26-sharp" data-a="big">{s.big}</span>
+          </div>
+          <h1 class="hero-name" aria-label={s.name}>
+            {[...s.name].map((ch) => (
+              <span class="mask mask--letter" aria-hidden="true"><span class="letter" data-a="letter">{ch}</span></span>
+            ))}
+          </h1>
+          <p class="hero-sub" data-a="sub">{s.subtitle}</p>
+        </div>
+      )}
+
+      {s.kind === 'chapter' && (
+        <div class="col">
+          <div class="chapter-num" data-a="eyebrow"><span>{s.number}</span></div>
+          <TitleLines text={s.title} />
+          <p class="lead" data-a="fade">{s.lead}</p>
+          <p class="text" data-a="fade">{s.text}</p>
+          {s.counter && (
+            <div class="counter" data-a="counter" data-to={s.counter.to} data-suffix={s.counter.suffix}>
+              <span class="counter-ghost counter-ghost--a" aria-hidden="true">{s.counter.to}{s.counter.suffix}</span>
+              <span class="counter-ghost counter-ghost--b" aria-hidden="true">{s.counter.to}{s.counter.suffix}</span>
+              <span class="counter-main">0{s.counter.suffix}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {s.kind === 'character' && (
+        <div class="col">
+          <div class="eyebrow" data-a="eyebrow">{s.eyebrow}</div>
+          <TitleLines text={s.title} class="title--sm" />
+          <div class="card" data-a="card">
+            <div class="card-head">
+              <div class="avatar">{s.cardName.charAt(0)}</div>
+              <div>
+                <div class="card-name">{s.cardName}</div>
+                <div class="card-class">{s.cardClass}</div>
+              </div>
+            </div>
+            {s.stats.map((st) => (
+              <div class:list={['stat', st.value > 100 && 'stat--over']} data-a="stat" data-value={st.value}>
+                <div class="stat-row">
+                  <span class="stat-label">{st.label}</span>
+                  <span class="stat-value" data-a="stat-num">{fmtStat(0)}</span>
+                </div>
+                <div class="track" data-a="track">
+                  <div class="fill" data-a="fill"></div>
+                  {st.value > 100 && <div class="stamp" data-a="stamp">{s.overflowLabel}</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {s.kind === 'feed' && (
+        <div class="head">
+          <div class="eyebrow" data-a="eyebrow">{s.eyebrow}</div>
+          <TitleLines text={s.title} class="title--sm" />
+        </div>
+      )}
+
+      {(s.kind === 'stats' || s.kind === 'achievements') && (
+        <div class="head">
+          <div class="eyebrow" data-a="eyebrow">{s.eyebrow}</div>
+          <TitleLines text={s.title} class="title--sm" />
+        </div>
+      )}
+
+      {s.kind === 'gallery' && (
+        <div class="head">
+          <div class="eyebrow" data-a="eyebrow">{s.eyebrow}</div>
+          <TitleLines text={s.title} class="title--sm" />
+        </div>
+      )}
+
+      {s.kind === 'goals' && (
+        <div class="head">
+          <div class="eyebrow" data-a="eyebrow">{s.eyebrow}</div>
+          <TitleLines text={s.title} class="title--sm" />
+        </div>
+      )}
+
+      {s.kind === 'final' && (
+        <div class="final">
+          <TitleLines text={s.title} class="title--final" />
+          <div class="progress" data-a="fade">
+            <div class="progress-track"><div class="progress-fill" data-a="progress" data-to={s.stopAt}></div></div>
+            <div class="progress-num" data-a="progress-num">0%</div>
+          </div>
+          <div class="hud">
+            <Spinner size={64} />
+            <div class="hud-text">
+              <Logo />
+              <p class="hud-tip" data-a="fade">{s.tip}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Camada 3: meme / elementos em primeiro plano -->
+  <div class="layer layer--meme" data-depth={memeDepth}>
+    <div class="px">
+      {'meme' in s && <Meme meme={s.meme} />}
+
+      {s.kind === 'feed' && (
+        <div class="feed">
+          {s.posts.map((p) => (
+            <article class:list={['post', p.image && 'post--img']} data-a="post" data-likes={p.likes}>
+              {p.image && (
+                <div class="post-img" data-a="post-img">
+                  <Photo name={p.image} alt="" widths={[220, 440]} sizes="220px" />
+                </div>
+              )}
+              <header class="post-head">
+                <div class="avatar avatar--sm">{s.handle.charAt(1).toUpperCase()}</div>
+                <div>
+                  <div class="post-name">{s.handle}</div>
+                  <div class="post-date">{p.date}</div>
+                </div>
+              </header>
+              <p class="post-text">{p.text}</p>
+              <footer class="post-foot">
+                <span class="likes"><span class="heart" data-a="heart">♥</span><span data-a="likes">0</span></span>
+                <span class="comment">
+                  {p.comment.avatar && <span class="comment-avatar"><Photo name={p.comment.avatar} alt="" widths={[80]} sizes="40px" /></span>}
+                  <b>{p.comment.author}</b> {p.comment.text}
+                </span>
+              </footer>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {s.kind === 'stats' && (
+        <div class:list={['wr', `wr--n${s.tiles.length}`]}>
+          {s.tiles.map((t, i) => (
+            <div class:list={['wr-tile', `wr-tile--${t.color}`, `wr-tile--${i + 1}`]} data-a="wr-tile">
+              <div class="wr-shape" data-a="wr-shape" aria-hidden="true"></div>
+              <div class="wr-label">{t.label}</div>
+              <div class="wr-num" data-a="wr-num" data-to={t.value} data-suffix={t.suffix ?? ''} data-decimals={t.decimals ?? 0}>0</div>
+              <div class="wr-note">{t.note}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {s.kind === 'achievements' && (
+        <div class="ach">
+          {s.items.map((it) => (
+            <div class:list={['ach-toast', it.locked && 'ach-toast--locked', it.tier && `ach-toast--${it.tier}`]} data-a="ach">
+              <div class="ach-shine" data-a="ach-shine" aria-hidden="true"></div>
+              <div class="ach-icon" data-a="ach-icon"><span>{it.icon}</span></div>
+              <div class="ach-body">
+                <div class="ach-kicker">{it.locked ? 'Conquista bloqueada' : 'Conquista desbloqueada'}</div>
+                <div class="ach-name">{it.name}</div>
+                <div class="ach-desc">{it.description}</div>
+                {it.locked && (
+                  <div class="ach-progress">
+                    <div class="ach-track"><div class="ach-fill" data-a="ach-fill" data-to={it.locked.progress}></div></div>
+                    <span>{it.locked.progress}%</span>
+                  </div>
+                )}
+              </div>
+              <div class="ach-side">
+                <div class="ach-points">{it.points} <small>G</small></div>
+                <div class="ach-rarity">{it.rarity}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {s.kind === 'achievements' && (
+        <div class="ach-score" data-a="ach-score">
+          <div>
+            <div class="ach-score-label">Gamerscore<br />2026</div>
+            <div class="ach-score-sub">{s.items.filter((i) => !i.locked).length} de {s.items.length}</div>
+          </div>
+          <div class="ach-score-num"><span data-a="ach-total" data-to={s.items.filter((i) => !i.locked).reduce((n, i) => n + i.points, 0)}>0</span><small> / {s.items.reduce((n, i) => n + i.points, 0)} G</small></div>
+        </div>
+      )}
+
+      {s.kind === 'gallery' && (
+        <div class="gallery">
+          {s.items.map((it) => (
+            <div class="gallery-item" data-a="gitem">
+              <div class="float" data-gfloat>
+                <figure class="polaroid polaroid--gal" style={`--tilt:${it.tilt}deg`}>
+                  <div class="polaroid-photo">
+                    <Photo name={it.image} alt={it.alt} widths={[400, 800]} sizes="400px" style={`object-position:${it.focus ?? '50% 50%'}`} />
+                  </div>
+                  <figcaption>{it.caption}</figcaption>
+                </figure>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {s.kind === 'final' && s.dancer && (
+        <div class="dancer" data-a="dancer">
+          <Photo name={s.dancer.image} alt={s.dancer.alt} widths={[480]} sizes="480px" />
+        </div>
+      )}
+
+      {s.kind === 'goals' && (
+        <div class="goals">
+          {s.goals.map((g) => (
+            <div class="goal" data-a="goal">
+              <div class="goal-inner" data-a="goal-inner">
+                <div class="goal-face goal-front">
+                  <div class="goal-emoji">{g.emoji}</div>
+                  <div class="goal-label">{g.label}</div>
+                </div>
+                <div class="goal-face goal-back"><span>?</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</section>

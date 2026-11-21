@@ -1,0 +1,34 @@
+---
+import { Picture } from 'astro:assets';
+import { img } from '../lib/images';
+import type { Background } from '../data/slides';
+
+interface Props { bg: Background }
+const { bg } = Astro.props;
+const focus = bg.focus ?? '50% 50%';
+const zoom = bg.zoom ?? 1.2;
+const filter = [
+  bg.hue ? `hue-rotate(${bg.hue}deg)` : '',
+  `saturate(${bg.saturate ?? 1.12})`,
+  `brightness(${bg.brightness ?? 0.92})`,
+].join(' ');
+---
+<div class:list={['bg', `tint-${bg.tint ?? 'violet'}`]}>
+  <div class="bg-drift" data-drift>
+    <div class="bg-crop" style={`transform-origin:${focus};transform:scale(${zoom})`}>
+      <Picture
+        src={img(bg.image)}
+        alt=""
+        widths={[1920, 2560]}
+        sizes="1920px"
+        formats={['webp']}
+        loading="eager"
+        decoding="async"
+        class="bg-img"
+        style={`object-position:${focus};filter:${filter}${bg.flip ? ";transform:scaleX(-1)" : ""}`}
+      />
+    </div>
+  </div>
+  <div class="bg-tint"></div>
+  <div class="bg-grain"></div>
+</div>

@@ -1,0 +1,18 @@
+---
+/* Imagem por nome: animada (WebP animado, <img> puro) ou estática (<Picture> otimizada). */
+import { Picture } from 'astro:assets';
+import { img, anim, video } from '../lib/images';
+
+interface Props { name: string; alt: string; widths: number[]; sizes: string; style?: string; class?: string }
+const { name, alt, widths, sizes, style, class: cls } = Astro.props;
+const animated = anim(name);
+const clip = video(name);
+---
+{clip ? (
+  <video src={clip} style={style} class={cls} muted loop playsinline preload="auto" aria-label={alt}></video>
+) : animated ? (
+  <img src={animated} alt={alt} style={style} class={cls} loading="eager" decoding="async" />
+) : (
+  <Picture src={img(name)} alt={alt} widths={widths} sizes={sizes} formats={['webp']}
+    loading="eager" decoding="async" style={style} class={cls} />
+)}
